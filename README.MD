@@ -1,6 +1,11 @@
-Meet is an app to locate great events 
+**Meet is an app to locate great events** 
 
 This app uses both serverless architecture and Open authorization (with Google).
+
+Sytems and programs used:
+* Google API and Google OAuth
+* AWS Lambda 
+* React and TDD techniques
 
 A serverless, progressive web application (PWA) is built with React using a test-driven development (TDD) technique.
 The application uses the Google Calendar API to fetch upcoming events, and Google OAuth is used for verification.
@@ -8,11 +13,12 @@ The serverless function is implemented using AWS Lambda.
 
 Going serverless for this project helps it be set up faster, as well as enabling it to easily scale in the future, if necessary.
 
-OAuth with google enables sign-in with safe provider to access protected content, making use of their existing infrastructure. 
+OAuth with Google enables sign-in with safe provider to access protected content, making use of their existing infrastructure. 
 
 
 Link to deployed page: https://maaikevp.github.io/meet/
 
+![Meet-app-screenshot](/Meet-app-screenshot.JPG)
 
 User stories and scenarios for several features of the app:
 
