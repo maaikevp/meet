@@ -9,7 +9,7 @@ const EventGenresChart = ({ allLocations, events }) => {
 
     useEffect(() => {
         setData(getData());
-    }, [`${events}`]);
+    }, [events]);
 
 
     const getData = () => {
