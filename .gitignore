@@ -2,3 +2,8 @@
 node_modules
 coverage
 .coverage
+
+
+api-old.js
+
+/build

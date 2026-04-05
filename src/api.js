@@ -1,9 +1,19 @@
-import mockData from './mock-data';
+// import mockData from './mock-data';
 import NProgress from 'nprogress';
 
+
+
+const API_BASE = "https://klo6z6tipjjvupwqa324sndpny0ojpkb.lambda-url.eu-central-1.on.aws";
+
+// helper endpoints
+const AUTH_URL = API_BASE ? `${API_BASE}/get-auth-url` : null;
+const TOKEN_BASE = API_BASE ? `${API_BASE}/token` : null;
+const EVENTS_BASE = API_BASE ? `${API_BASE}/get-events` : null;
 /**
- *
- * @param {*} events:
+ * 
+ * 
+ * 
+ *  * @param {*} events:
  * The following function should be in the “api.js” file.
  * This function takes an events array, then uses map to create a new array with only locations.
  * It will also remove all duplicates by creating another new array using the spread operator and spreading a Set.
@@ -38,9 +48,10 @@ export const getAccessToken = async () => {
         const searchParams = new URLSearchParams(window.location.search);
         const code = await searchParams.get("code");
         if (!code) {
-            const response = await fetch(
-                "https://0sntrgtwpa.execute-api.eu-central-1.amazonaws.com/dev/api/get-auth-url"
-            );
+            if (!AUTH_URL) {
+                throw new Error("API_BASE not configured for auth-server.");
+            }
+            const response = await fetch(AUTH_URL);
             const result = await response.json();
             const { authUrl } = result;
             return (window.location.href = authUrl);
@@ -78,8 +89,8 @@ export const getEvents = async () => {
 
     if (token) {
         removeQuery();
-        // eslint-disable-next-line
-        const url = "https://0sntrgtwpa.execute-api.eu-central-1.amazonaws.com/dev/api/get-events" + "/" + token;
+        if (!EVENTS_BASE) throw new Error("API_BASE not configured for get-events.");
+        const url = `${EVENTS_BASE}/${token}`;
         const response = await fetch(url);
         const result = await response.json();
         if (result) {
@@ -107,12 +118,9 @@ const removeQuery = () => {
 
 const getToken = async (code) => {
     const encodeCode = encodeURIComponent(code);
-    const response = await fetch(
-        // eslint-disable-next-line
-        'https://0sntrgtwpa.execute-api.eu-central-1.amazonaws.com/dev/api/token' + '/' + encodeCode
-    );
+    if (!TOKEN_BASE) throw new Error("API_BASE not configured for token exchange.");
+    const response = await fetch(`${TOKEN_BASE}/${encodeCode}`);
     const { access_token } = await response.json();
     access_token && localStorage.setItem("access_token", access_token);
-
     return access_token;
 };

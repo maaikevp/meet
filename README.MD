@@ -2,7 +2,7 @@
 
 This app uses both serverless architecture and Open authorization (with Google).
 
-Sytems and programs used:
+Systems and programs used:
 * Google API and Google OAuth
 * AWS Lambda 
 * React and TDD techniques
