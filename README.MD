@@ -2,7 +2,7 @@
 
 This app uses both serverless architecture and Open authorization (with Google).
 
-Systems and programs used:
+Sytems and programs used:
 * Google API and Google OAuth
 * AWS Lambda 
 * React and TDD techniques
@@ -15,9 +15,17 @@ Going serverless for this project helps it be set up faster, as well as enabling
 
 OAuth with Google enables sign-in with safe provider to access protected content, making use of their existing infrastructure. 
 
+This app uses both serverless architecture and Open authorization (with Google).
+
+## Systems and programs used:
+
+* Google API and Google OAuth
+* AWS Lambda 
+* React and TDD techniques
 
 Link to deployed page: https://maaikevp.github.io/meet/
 
+**Screenshot of app:**
 ![Meet-app-screenshot](/Meet-app-screenshot.JPG)
 
 User stories and scenarios for several features of the app:
