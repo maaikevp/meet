@@ -1,14 +1,11 @@
 import mockData from './mock-data';
-import NProgress from 'nprogress';
 
-
-
-const API_BASE = "https://klo6z6tipjjvupwqa324sndpny0ojpkb.lambda-url.eu-central-1.on.aws";
+const API_BASE = "https://0sntrgtwpa.execute-api.eu-central-1.amazonaws.com/dev";
 
 // helper endpoints
-const AUTH_URL = API_BASE ? `${API_BASE}/get-auth-url` : null;
-const TOKEN_BASE = API_BASE ? `${API_BASE}/token` : null;
-const EVENTS_BASE = API_BASE ? `${API_BASE}/get-events` : null;
+const AUTH_URL = `${API_BASE}/api/get-auth-url`;
+const TOKEN_BASE = `${API_BASE}/api/token`;
+const EVENTS_BASE = `${API_BASE}/api/get-events`;
 /**
  * 
  * 
@@ -46,15 +43,13 @@ export const getAccessToken = async () => {
     if (!accessToken || tokenCheck.error) {
         await localStorage.removeItem("access_token");
         const searchParams = new URLSearchParams(window.location.search);
-        const code = await searchParams.get("code");
+        const code = searchParams.get("code");
         if (!code) {
-            if (!AUTH_URL) {
-                throw new Error("API_BASE not configured for auth-server.");
-            }
             const response = await fetch(AUTH_URL);
             const result = await response.json();
             const { authUrl } = result;
-            return (window.location.href = authUrl);
+            window.location.href = authUrl;
+            return null;
         }
         return code && getToken(code);
     }
@@ -78,27 +73,21 @@ export const getEvents = async () => {
         return mockData;
     }
 
-
-    if (!navigator.onLine) {
-        const data = localStorage.getItem("lastEvents");
-        NProgress.done();
-        return data ? JSON.parse(data).events : [];
-    }
-
     const token = await getAccessToken();
 
-    if (token) {
+    if (token && !token.startsWith("http")) {
         removeQuery();
-        if (!EVENTS_BASE) throw new Error("API_BASE not configured for get-events.");
-        const url = `${EVENTS_BASE}/${token}`;
+        const encodedToken = encodeURIComponent(token);
+        const url = `${EVENTS_BASE}/${encodedToken}`;
         const response = await fetch(url);
         const result = await response.json();
         if (result) {
-            NProgress.done();
             localStorage.setItem("lastEvents", JSON.stringify(result.events));
             return result.events;
         } else return null;
     }
+
+    return [];
 };
 
 const removeQuery = () => {
@@ -118,7 +107,6 @@ const removeQuery = () => {
 
 const getToken = async (code) => {
     const encodeCode = encodeURIComponent(code);
-    if (!TOKEN_BASE) throw new Error("API_BASE not configured for token exchange.");
     const response = await fetch(`${TOKEN_BASE}/${encodeCode}`);
     const { access_token } = await response.json();
     access_token && localStorage.setItem("access_token", access_token);

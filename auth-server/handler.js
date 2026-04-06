@@ -18,6 +18,25 @@ const {
 
 const SCOPES = ['https://www.googleapis.com/auth/calendar.events.public.readonly'];
 
+const normalizeCalendarId = (value) => {
+  if (!value) return '';
+
+  let normalized = `${value}`.trim();
+
+  try {
+    normalized = decodeURIComponent(normalized);
+  } catch (error) {
+    // Keep original value if it is not URI-encoded.
+  }
+
+  normalized = normalized
+    .replace(/^https?:\/\/www\.googleapis\.com\/calendar\/v3\/calendars\//, '')
+    .replace(/\/events.*$/, '')
+    .trim();
+
+  return normalized;
+};
+
 const oAuth2Client = new google.auth.OAuth2(
   CLIENT_ID,
   CLIENT_SECRET,
@@ -151,13 +170,18 @@ module.exports.getCalendarEvents = async (event) => {
     const access_token = decodeURIComponent(`${event.pathParameters?.access_token || ''}`);
     if (!access_token) return respond(400, { message: 'Missing access token' });
 
+    const calendarId = normalizeCalendarId(CALENDAR_ID);
+    if (!calendarId) {
+      return respond(500, { message: 'Missing CALENDAR_ID configuration' });
+    }
+
     // Use token to fetch events (no secrets exposed)
     oAuth2Client.setCredentials({ access_token });
 
     const results = await new Promise((resolve, reject) => {
       calendar.events.list(
         {
-          calendarId: CALENDAR_ID,
+          calendarId,
           auth: oAuth2Client,
           timeMin: new Date().toISOString(),
           singleEvents: true,

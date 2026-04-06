@@ -6,7 +6,10 @@ const EventList = ({ events }) => {
     return (
         <ul id="event-list">
             {events ?
-                events.map(event => <Event key={event.id} event={event} />) :
+                events.map((event, index) => {
+                    const key = `${event.id || event.iCalUID || 'event'}-${event.start?.dateTime || event.start?.date || index}`;
+                    return <Event key={key} event={event} />;
+                }) :
                 null}
         </ul>
     );
